@@ -34,9 +34,13 @@ struct SockAddr {
     Inet6& inet6 () const { return *((Inet6*)this); }
 
     const sockaddr* get () const { return &sa; }
+    sockaddr*       get ()       { return &sa; }
 
     bool operator== (const SockAddr& oth) const;
     bool operator!= (const SockAddr& oth) const { return !operator==(oth); }
+
+    explicit
+    operator bool () const { return sa.sa_family != AF_UNSPEC; }
 
     #ifndef _WIN32
 
@@ -70,8 +74,11 @@ struct SockAddr::Inet4 : SockAddr {
     Inet4 (const std::string_view& ip, uint16_t port);
     Inet4 (const in_addr* addr, uint16_t port);
 
-    const in_addr*     addr () const { return &sa4.sin_addr; }
-    const sockaddr_in* get  () const { return &sa4; }
+    const in_addr* addr () const { return &sa4.sin_addr; }
+    in_addr*       addr ()       { return &sa4.sin_addr; }
+
+    const sockaddr_in* get () const { return &sa4; }
+    sockaddr_in*       get ()       { return &sa4; }
 
     uint16_t port () const { return ntohs(sa4.sin_port); }
     string   ip   () const;
@@ -84,8 +91,11 @@ struct SockAddr::Inet6 : SockAddr {
     Inet6 (const std::string_view& ip, uint16_t port, uint32_t scope_id = 0, uint32_t flowinfo = 0);
     Inet6 (const in6_addr* addr, uint16_t port, uint32_t scope_id = 0, uint32_t flowinfo = 0);
 
-    const in6_addr*     addr () const { return &sa6.sin6_addr; }
-    const sockaddr_in6* get  () const { return &sa6; }
+    const in6_addr* addr () const { return &sa6.sin6_addr; }
+    in6_addr*       addr ()       { return &sa6.sin6_addr; }
+
+    const sockaddr_in6* get () const { return &sa6; }
+    sockaddr_in6*       get ()       { return &sa6; }
 
     string   ip       () const;
     uint16_t port     () const { return ntohs(sa6.sin6_port); }
@@ -104,6 +114,7 @@ struct SockAddr::Unix : SockAddr {
     std::string_view path () const { return (char*)sau.sun_path; }
 
     const sockaddr_un* get () const { return &sau; }
+    sockaddr_un*       get ()       { return &sau; }
 };
 
 #endif

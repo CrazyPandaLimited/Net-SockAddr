@@ -35,4 +35,11 @@ TEST_CASE("base") {
     SECTION("==") {
         CHECK(SockAddr::Inet4("127.0.0.1", 10) != SockAddr::Inet6("::1", 10));
     }
+
+    SECTION("bool") {
+        SockAddr sa;
+        CHECK(!sa);
+        sa = SockAddr::Inet4("0.0.0.0", 0);
+        CHECK(sa);
+    }
 }
