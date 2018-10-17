@@ -14,9 +14,9 @@ namespace xs { namespace net {
         if (!SvOK(arg)) return {};
         if (Sv(arg).is_object_ref()) return *_in_sockaddr_ptr(aTHX_ arg);
         if (!SvPOK(arg) || SvCUR(arg) < sizeof(sockaddr)) throw "invalid sockaddr";
-        const sockaddr& sa = *((const sockaddr*)SvPVX(arg));
+        auto sa = (const sockaddr*)SvPVX(arg);
         size_t minlen;
-        switch (sa.sa_family) {
+        switch (sa->sa_family) {
             case AF_UNSPEC : return {};
             case AF_INET   : minlen = sizeof(sockaddr_in); break;
             case AF_INET6  : minlen = sizeof(sockaddr_in6); break;

@@ -2,6 +2,8 @@ package Net::SockAddr;
 use 5.012;
 use XS::Framework;
 
+our $VERSION = '1.0.0';
+
 XS::Loader::bootstrap();
 
 use overload

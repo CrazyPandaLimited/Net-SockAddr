@@ -1,10 +1,10 @@
 #include "lib/test.h"
 
-#define CHECK_SA(sa, _port, ...) {           \
-    CHECK(sa.is_inet6());                    \
-    CHECK(sa.port() == _port);               \
-    unsigned char tmp[16] = __VA_ARGS__;     \
-    CHECK(memcmp(&sa.addr(), tmp, 16) == 0); \
+#define CHECK_SA(sa, _port, ...) {          \
+    CHECK(sa.is_inet6());                   \
+    CHECK(sa.port() == _port);              \
+    unsigned char tmp[16] = __VA_ARGS__;    \
+    CHECK(memcmp(sa.addr(), tmp, 16) == 0); \
 }
 
 TEST_CASE("inet6") {

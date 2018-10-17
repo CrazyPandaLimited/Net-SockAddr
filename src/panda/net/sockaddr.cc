@@ -15,13 +15,13 @@ using std::error_code;
 using std::system_error;
 using std::make_error_code;
 
-SockAddr::SockAddr (const sockaddr& _sa) {
-    switch (_sa.sa_family) {
+SockAddr::SockAddr (const sockaddr* _sa) {
+    switch (_sa->sa_family) {
         case AF_UNSPEC : sa.sa_family = AF_UNSPEC; break;
-        case AF_INET   : sa4 = (const sockaddr_in&)_sa; break;
-        case AF_INET6  : sa6 = (const sockaddr_in6&)_sa; break;
+        case AF_INET   : sa4 = *(const sockaddr_in*)_sa; break;
+        case AF_INET6  : sa6 = *(const sockaddr_in6*)_sa; break;
         #ifndef _WIN32
-        case AF_UNIX   : sau = (const sockaddr_un&)_sa; break;
+        case AF_UNIX   : sau = *(const sockaddr_un*)_sa; break;
         #endif
         default        : throw system_error(make_error_code(errc::address_family_not_supported));
     }
@@ -66,11 +66,11 @@ SockAddr::Inet4::Inet4 (const std::string_view& ip, uint16_t port) {
     if (err) throw system_error(make_error_code((errc)err));
 }
 
-SockAddr::Inet4::Inet4 (const in_addr& addr, uint16_t port) {
+SockAddr::Inet4::Inet4 (const in_addr* addr, uint16_t port) {
     memset(&sa4, 0, sizeof(sa4));
     sa4.sin_family = AF_INET;
     sa4.sin_port = htons(port);
-    sa4.sin_addr = addr;
+    sa4.sin_addr = *addr;
 }
 
 string SockAddr::Inet4::ip () const {
@@ -114,11 +114,11 @@ SockAddr::Inet6::Inet6 (const std::string_view& ip, uint16_t port, uint32_t scop
     if (err) throw system_error(make_error_code((errc)err));
 }
 
-SockAddr::Inet6::Inet6 (const in6_addr& addr, uint16_t port, uint32_t scope_id, uint32_t flowinfo) {
+SockAddr::Inet6::Inet6 (const in6_addr* addr, uint16_t port, uint32_t scope_id, uint32_t flowinfo) {
     memset(&sa6, 0, sizeof(sa6));
     sa6.sin6_family   = AF_INET6;
     sa6.sin6_port     = htons(port);
-    sa6.sin6_addr     = addr;
+    sa6.sin6_addr     = *addr;
     sa6.sin6_scope_id = scope_id;
     sa6.sin6_flowinfo = htonl(flowinfo);
 }

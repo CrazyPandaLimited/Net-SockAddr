@@ -31,7 +31,6 @@ bool SockAddr::is_unix ()
 #endif
 
 string_view SockAddr::get () {
-    auto ptr = (const char*)&THIS->get();
     size_t len;
     switch (THIS->family()) {
         case AF_UNSPEC : XSRETURN_UNDEF;
@@ -39,7 +38,7 @@ string_view SockAddr::get () {
         case AF_INET6  : len = sizeof(sockaddr_in6); break;
         default        : len = sizeof(*THIS); break; // AF_UNIX
     }
-    RETVAL = string_view(ptr, len);
+    RETVAL = string_view((const char*)THIS->get(), len);
 }
 
 std::string SockAddr::_to_string (...) {
@@ -59,7 +58,7 @@ PROTOTYPES: DISABLE
 
 SockAddr from_addr (string_view addr, uint16_t port) {
     if (addr.length() != sizeof(in_addr)) throw "invalid ip4 addr";
-    RETVAL = SockAddr::Inet4(*((in_addr*)addr.data()), port);
+    RETVAL = SockAddr::Inet4((const in_addr*)addr.data(), port);
 }
 
 SockAddr new (SV*, string_view ip, uint16_t port) {
@@ -75,8 +74,7 @@ uint16_t SockAddr::port () {
 }
 
 string_view SockAddr::addr () {
-    const auto& addr = THIS->inet4().addr();
-    RETVAL = string_view((const char*)&addr, sizeof(addr));
+    RETVAL = string_view((const char*)THIS->inet4().addr(), sizeof(in_addr));
 }
 
 
@@ -85,7 +83,7 @@ PROTOTYPES: DISABLE
 
 SockAddr from_addr (string_view addr, uint16_t port, uint32_t scope_id = 0, uint32_t flow_info = 0) {
     if (addr.length() != sizeof(in6_addr)) throw "invalid ip6 addr";
-    RETVAL = SockAddr::Inet6(*((in6_addr*)addr.data()), port, scope_id, flow_info);
+    RETVAL = SockAddr::Inet6((const in6_addr*)addr.data(), port, scope_id, flow_info);
 }
 
 SockAddr new (SV*, string_view ip, uint16_t port, uint32_t scope_id = 0, uint32_t flow_info = 0) {
@@ -109,8 +107,7 @@ uint32_t SockAddr::flowinfo () {
 }
 
 string_view SockAddr::addr () {
-    const auto& addr = THIS->inet6().addr();
-    RETVAL = string_view((const char*)&addr, sizeof(addr));
+    RETVAL = string_view((const char*)THIS->inet6().addr(), sizeof(in6_addr));
 }
 
 
