@@ -5,9 +5,10 @@ use MyTest;
 use Net::SockAddr;
 use Socket();
 
-is AF_INET,   Socket::AF_INET,  "AF_INET";
-is AF_INET6,  Socket::AF_INET6, "AF_INET6";
-is AF_UNIX(), Socket::AF_UNIX,  "AF_UNIX" if $^O ne 'MSWin32';
+is AF_UNSPEC, Socket::AF_UNSPEC, "AF_UNSPEC";
+is AF_INET,   Socket::AF_INET,   "AF_INET";
+is AF_INET6,  Socket::AF_INET6,  "AF_INET6";
+is AF_UNIX(), Socket::AF_UNIX,   "AF_UNIX" if $^O ne 'MSWin32';
 
 is INADDR_ANY,       Socket::INADDR_ANY,       "INADDR_ANY";
 is INADDR_LOOPBACK,  Socket::INADDR_LOOPBACK,  "INADDR_LOOPBACK";

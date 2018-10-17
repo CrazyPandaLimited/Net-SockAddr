@@ -42,4 +42,18 @@ TEST_CASE("base") {
         sa = SockAddr::Inet4("0.0.0.0", 0);
         CHECK(sa);
     }
+
+    SECTION("ip") {
+        SockAddr sa;
+        CHECK(sa.ip() == "");
+
+        sa = SockAddr::Inet4("127.0.0.1", 0);
+        CHECK(sa.ip() == "127.0.0.1");
+
+        sa = SockAddr::Inet6("::1", 0);
+        CHECK(sa.ip() == "::1");
+
+        sa = SockAddr::Unix("/path");
+        CHECK_THROWS(sa.ip());
+    }
 }

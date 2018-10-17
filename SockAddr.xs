@@ -5,6 +5,7 @@
 using namespace xs;
 using namespace xs::exp;
 using namespace panda::net;
+using panda::string;
 using std::string_view;
 
 template <class T>
@@ -20,10 +21,11 @@ BOOT {
     Stash("Net::SockAddr::Unix",  GV_ADD).inherit(me);
     
     constant_t constants[] = {
-        {"AF_INET",  AF_INET,  NULL},
-        {"AF_INET6", AF_INET6, NULL},
+        {"AF_UNSPEC", AF_UNSPEC, NULL},
+        {"AF_INET",   AF_INET,   NULL},
+        {"AF_INET6",  AF_INET6,  NULL},
         #ifndef _WIN32
-        {"AF_UNIX",  AF_UNIX,  NULL},
+        {"AF_UNIX",   AF_UNIX,   NULL},
         #endif
         {"autoexport", 1, NULL},
         {NULL, 0, NULL}
@@ -77,8 +79,6 @@ bool SockAddr::_eq (SockAddr oth, ...) { RETVAL = *THIS == oth; }
 
 bool SockAddr::_ne (SockAddr oth, ...) { RETVAL = *THIS != oth; }
 
-
-
 MODULE = Net::SockAddr                PACKAGE = Net::SockAddr::Inet4
 PROTOTYPES: DISABLE
 
@@ -91,7 +91,7 @@ SockAddr new (SV*, string_view ip, uint16_t port) {
     RETVAL = SockAddr::Inet4(ip, port);
 }
 
-string_view SockAddr::ip () {
+string SockAddr::ip () {
     RETVAL = THIS->inet4().ip();
 }
 
@@ -116,7 +116,7 @@ SockAddr new (SV*, string_view ip, uint16_t port, uint32_t scope_id = 0, uint32_
     RETVAL = SockAddr::Inet6(ip, port, scope_id, flow_info);
 }
 
-string_view SockAddr::ip () {
+string SockAddr::ip () {
     RETVAL = THIS->inet6().ip();
 }
 

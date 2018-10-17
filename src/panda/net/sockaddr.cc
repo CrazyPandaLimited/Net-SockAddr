@@ -23,6 +23,8 @@ const in_addr SockAddr::Inet4::ADDR_NONE      = {htonl(INADDR_NONE)};
 const in6_addr SockAddr::Inet6::ADDR_ANY      = IN6ADDR_ANY_INIT;
 const in6_addr SockAddr::Inet6::ADDR_LOOPBACK = IN6ADDR_LOOPBACK_INIT;
 
+static system_error _not_supported () { return system_error(make_error_code(errc::address_family_not_supported)); }
+
 SockAddr::SockAddr (const sockaddr* _sa) {
     switch (_sa->sa_family) {
         case AF_UNSPEC : sa.sa_family = AF_UNSPEC; break;
@@ -31,7 +33,7 @@ SockAddr::SockAddr (const sockaddr* _sa) {
         #ifndef _WIN32
         case AF_UNIX   : sau = *(const sockaddr_un*)_sa; break;
         #endif
-        default        : throw system_error(make_error_code(errc::address_family_not_supported));
+        default        : throw _not_supported();
     }
 }
 
@@ -44,8 +46,17 @@ bool SockAddr::operator== (const SockAddr& oth) const {
         #ifndef _WIN32
         case AF_UNIX   : return !std::strcmp(sau.sun_path, oth.sau.sun_path);
         #endif
-        default        : throw system_error(make_error_code(errc::address_family_not_supported));
+        default        : throw _not_supported();
     }
+}
+
+string SockAddr::ip () const {
+   switch (sa.sa_family) {
+       case AF_UNSPEC: return {};
+       case AF_INET:   return inet4().ip();
+       case AF_INET6:  return inet6().ip();
+       default: throw _not_supported();
+   }
 }
 
 std::ostream& operator<< (std::ostream& os, const SockAddr& sa) {
@@ -60,7 +71,7 @@ std::ostream& operator<< (std::ostream& os, const SockAddr& sa) {
         #ifndef _WIN32
         case AF_UNIX   : os << sa.unix().path(); break;
         #endif
-        default        : throw system_error(make_error_code(errc::address_family_not_supported));
+        default        : throw _not_supported();
     }
     return os;
 }
