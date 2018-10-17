@@ -68,14 +68,19 @@ protected:
 std::ostream& operator<< (std::ostream&, const SockAddr&);
 
 struct SockAddr::Inet4 : SockAddr {
+    static const in_addr ADDR_ANY;
+    static const in_addr ADDR_LOOPBACK;
+    static const in_addr ADDR_BROADCAST;
+    static const in_addr ADDR_NONE;
+
     Inet4 (const sockaddr_in* sa) : SockAddr(sa)        {}
     Inet4 (const Inet4& oth)      : SockAddr(oth.get()) {}
 
     Inet4 (const std::string_view& ip, uint16_t port);
-    Inet4 (const in_addr* addr, uint16_t port);
+    Inet4 (const in_addr& addr, uint16_t port);
 
-    const in_addr* addr () const { return &sa4.sin_addr; }
-    in_addr*       addr ()       { return &sa4.sin_addr; }
+    const in_addr& addr () const { return sa4.sin_addr; }
+    in_addr&       addr ()       { return sa4.sin_addr; }
 
     const sockaddr_in* get () const { return &sa4; }
     sockaddr_in*       get ()       { return &sa4; }
@@ -85,14 +90,17 @@ struct SockAddr::Inet4 : SockAddr {
 };
 
 struct SockAddr::Inet6 : SockAddr {
+    static const in6_addr ADDR_ANY;
+    static const in6_addr ADDR_LOOPBACK;
+
     Inet6 (const sockaddr_in6* sa) : SockAddr(sa)        {}
     Inet6 (const Inet6& oth)       : SockAddr(oth.get()) {}
 
     Inet6 (const std::string_view& ip, uint16_t port, uint32_t scope_id = 0, uint32_t flowinfo = 0);
-    Inet6 (const in6_addr* addr, uint16_t port, uint32_t scope_id = 0, uint32_t flowinfo = 0);
+    Inet6 (const in6_addr& addr, uint16_t port, uint32_t scope_id = 0, uint32_t flowinfo = 0);
 
-    const in6_addr* addr () const { return &sa6.sin6_addr; }
-    in6_addr*       addr ()       { return &sa6.sin6_addr; }
+    const in6_addr& addr () const { return sa6.sin6_addr; }
+    in6_addr&       addr ()       { return sa6.sin6_addr; }
 
     const sockaddr_in6* get () const { return &sa6; }
     sockaddr_in6*       get ()       { return &sa6; }

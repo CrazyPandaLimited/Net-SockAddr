@@ -2,7 +2,7 @@ use 5.012;
 use warnings;
 use lib 't/lib';
 use MyTest;
-use Socket;
+use Socket qw/inet_pton sockaddr_in sockaddr_in6 AF_INET AF_INET6 AF_UNIX/;
 
 catch_run('base');
 
@@ -13,7 +13,7 @@ subtest "create from sockaddr" => sub {
     };
     subtest "inet4" => sub {
         my $ip = "192.168.1.1";
-        my $addr = inet_aton($ip);
+        my $addr = inet_pton(AF_INET, $ip);
         my $_sa = sockaddr_in(1234, $addr);
         my $sa = Net::SockAddr->new($_sa);
         isa_ok $sa, "Net::SockAddr::Inet4";
@@ -26,7 +26,8 @@ subtest "create from sockaddr" => sub {
     };
     subtest "inet6" => sub {
         my $ip = "fe80::71a3:2b00:ddd3:753f";
-        my $_sa = Net::SockAddr::Inet6->new($ip, 123, 456, 789)->get;
+        my $addr = inet_pton(AF_INET6, $ip);
+        my $_sa = sockaddr_in6(123, $addr, 456, 789);
         my $sa = Net::SockAddr->new($_sa);
         isa_ok $sa, "Net::SockAddr::Inet6";
         ok $sa->is_inet6, "is_inet6";

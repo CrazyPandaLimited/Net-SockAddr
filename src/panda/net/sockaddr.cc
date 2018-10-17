@@ -15,6 +15,14 @@ using std::error_code;
 using std::system_error;
 using std::make_error_code;
 
+const in_addr SockAddr::Inet4::ADDR_ANY       = {htonl(INADDR_ANY)};
+const in_addr SockAddr::Inet4::ADDR_LOOPBACK  = {htonl(INADDR_LOOPBACK)};
+const in_addr SockAddr::Inet4::ADDR_BROADCAST = {htonl(INADDR_BROADCAST)};
+const in_addr SockAddr::Inet4::ADDR_NONE      = {htonl(INADDR_NONE)};
+
+const in6_addr SockAddr::Inet6::ADDR_ANY      = IN6ADDR_ANY_INIT;
+const in6_addr SockAddr::Inet6::ADDR_LOOPBACK = IN6ADDR_LOOPBACK_INIT;
+
 SockAddr::SockAddr (const sockaddr* _sa) {
     switch (_sa->sa_family) {
         case AF_UNSPEC : sa.sa_family = AF_UNSPEC; break;
@@ -66,11 +74,11 @@ SockAddr::Inet4::Inet4 (const std::string_view& ip, uint16_t port) {
     if (err) throw system_error(make_error_code((errc)err));
 }
 
-SockAddr::Inet4::Inet4 (const in_addr* addr, uint16_t port) {
+SockAddr::Inet4::Inet4 (const in_addr& addr, uint16_t port) {
     memset(&sa4, 0, sizeof(sa4));
     sa4.sin_family = AF_INET;
     sa4.sin_port = htons(port);
-    sa4.sin_addr = *addr;
+    sa4.sin_addr = addr;
 }
 
 string SockAddr::Inet4::ip () const {
@@ -114,11 +122,11 @@ SockAddr::Inet6::Inet6 (const std::string_view& ip, uint16_t port, uint32_t scop
     if (err) throw system_error(make_error_code((errc)err));
 }
 
-SockAddr::Inet6::Inet6 (const in6_addr* addr, uint16_t port, uint32_t scope_id, uint32_t flowinfo) {
+SockAddr::Inet6::Inet6 (const in6_addr& addr, uint16_t port, uint32_t scope_id, uint32_t flowinfo) {
     memset(&sa6, 0, sizeof(sa6));
     sa6.sin6_family   = AF_INET6;
     sa6.sin6_port     = htons(port);
-    sa6.sin6_addr     = *addr;
+    sa6.sin6_addr     = addr;
     sa6.sin6_scope_id = scope_id;
     sa6.sin6_flowinfo = htonl(flowinfo);
 }

@@ -8,7 +8,7 @@ my %params = (
     CPLUS         => 11,
     SRC           => ['src'],
     INC           => '-Isrc',
-    BIN_DEPS      => ['XS::Framework', 'Test::Catch'],
+    BIN_DEPS      => ['XS::Framework', 'Test::Catch', 'Panda::Export'],
     CCFLAGS       => '-Wall -Wextra',
     OPTIMIZE      => '-O2',
     test          => {SRC => 't'},

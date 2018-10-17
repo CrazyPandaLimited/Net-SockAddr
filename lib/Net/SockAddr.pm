@@ -1,6 +1,7 @@
 package Net::SockAddr;
 use 5.012;
 use XS::Framework;
+use Panda::Export();
 
 our $VERSION = '1.0.0';
 

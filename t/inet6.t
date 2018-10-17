@@ -2,10 +2,12 @@ use 5.012;
 use warnings;
 use lib 't/lib';
 use MyTest;
+use Socket qw/AF_INET6 inet_pton/;
 
 catch_run('inet6');
 
 my $ip = "12:34:56:78:90:ab:cd:ef";
+my $addr = inet_pton(AF_INET6, $ip);
 
 subtest "from ip" => sub {
     my $sa = Net::SockAddr::Inet6->new($ip, 80, 10, 20);
@@ -18,7 +20,6 @@ subtest "from ip" => sub {
 };
 
 subtest "from addr" => sub {
-    my $addr = Net::SockAddr::Inet6->new($ip, 0)->addr;
     my $sa = Net::SockAddr::Inet6::from_addr($addr, 81, 30, 40);
     is $sa->port, 81, "port";
     is $sa->ip, $ip, "ip";
