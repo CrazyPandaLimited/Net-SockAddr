@@ -67,23 +67,4 @@ subtest 'equality' => sub {
     ok(Net::SockAddr::Inet6->new("::1", 80) == Net::SockAddr::Inet6->new("::1", 80));
 };
 
-{
-    package Ebana;
-    use 5.012;
-    use Panda::Export {
-        SUKA => 1,
-    };
-    
-    BEGIN { *import = \&Panda::Export::import; }
-    
-    warn "SUKA=".SUKA;
-    
-    package Pizda;
-    use 5.012;
-    BEGIN { Ebana->import; }
-    
-    warn SUKA;
-    
-}
-
 done_testing();
