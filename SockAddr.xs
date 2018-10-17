@@ -36,7 +36,7 @@ string_view SockAddr::get () {
         case AF_UNSPEC : XSRETURN_UNDEF;
         case AF_INET   : len = sizeof(sockaddr_in); break;
         case AF_INET6  : len = sizeof(sockaddr_in6); break;
-        default        : len = sizeof(*THIS); break; // AF_UNIX
+        default        : len = sizeof(sockaddr_un); break; // AF_UNIX
     }
     RETVAL = string_view((const char*)THIS->get(), len);
 }
