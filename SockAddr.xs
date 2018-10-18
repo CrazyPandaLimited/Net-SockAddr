@@ -33,12 +33,16 @@ BOOT {
     create_constants(aTHX_ me, constants);
     
     create_constants(aTHX_ me, Hash({
-        {"INADDR_ANY",       Simple(addr2sv(SockAddr::Inet4::ADDR_ANY))       },
-        {"INADDR_LOOPBACK",  Simple(addr2sv(SockAddr::Inet4::ADDR_LOOPBACK))  },
-        {"INADDR_BROADCAST", Simple(addr2sv(SockAddr::Inet4::ADDR_BROADCAST)) },
-        {"INADDR_NONE",      Simple(addr2sv(SockAddr::Inet4::ADDR_NONE))      },
-        {"IN6ADDR_ANY",      Simple(addr2sv(SockAddr::Inet6::ADDR_ANY))       },
-        {"IN6ADDR_LOOPBACK", Simple(addr2sv(SockAddr::Inet6::ADDR_LOOPBACK))  },
+        {"INADDR_ANY",       Simple(addr2sv(SockAddr::Inet4::ADDR_ANY))          },
+        {"INADDR_LOOPBACK",  Simple(addr2sv(SockAddr::Inet4::ADDR_LOOPBACK))     },
+        {"INADDR_BROADCAST", Simple(addr2sv(SockAddr::Inet4::ADDR_BROADCAST))    },
+        {"INADDR_NONE",      Simple(addr2sv(SockAddr::Inet4::ADDR_NONE))         },
+        {"IN6ADDR_ANY",      Simple(addr2sv(SockAddr::Inet6::ADDR_ANY))          },
+        {"IN6ADDR_LOOPBACK", Simple(addr2sv(SockAddr::Inet6::ADDR_LOOPBACK))     },
+        {"SA_ANY_ANY",       xs::out<SockAddr>(SockAddr::Inet4::SA_ANY_ANY)      },
+        {"SA_LOOPBACK_ANY",  xs::out<SockAddr>(SockAddr::Inet4::SA_LOOPBACK_ANY) },
+        {"SA6_ANY_ANY",      xs::out<SockAddr>(SockAddr::Inet6::SA_ANY_ANY)      },
+        {"SA6_LOOPBACK_ANY", xs::out<SockAddr>(SockAddr::Inet6::SA_LOOPBACK_ANY) },
     }));
 }
 

@@ -23,6 +23,11 @@ const in_addr SockAddr::Inet4::ADDR_NONE      = {htonl(INADDR_NONE)};
 const in6_addr SockAddr::Inet6::ADDR_ANY      = IN6ADDR_ANY_INIT;
 const in6_addr SockAddr::Inet6::ADDR_LOOPBACK = IN6ADDR_LOOPBACK_INIT;
 
+const SockAddr::Inet4 SockAddr::Inet4::SA_ANY_ANY     (SockAddr::Inet4::ADDR_ANY, 0);
+const SockAddr::Inet4 SockAddr::Inet4::SA_LOOPBACK_ANY(SockAddr::Inet4::ADDR_LOOPBACK, 0);
+const SockAddr::Inet6 SockAddr::Inet6::SA_ANY_ANY     (SockAddr::Inet6::ADDR_ANY, 0);
+const SockAddr::Inet6 SockAddr::Inet6::SA_LOOPBACK_ANY(SockAddr::Inet6::ADDR_LOOPBACK, 0);
+
 static system_error _not_supported () { return system_error(make_error_code(errc::address_family_not_supported)); }
 
 SockAddr::SockAddr (const sockaddr* _sa) {
