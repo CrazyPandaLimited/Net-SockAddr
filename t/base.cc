@@ -43,17 +43,27 @@ TEST_CASE("base") {
         CHECK(sa);
     }
 
-    SECTION("ip") {
+    SECTION("ip/port/length") {
         SockAddr sa;
         CHECK(sa.ip() == "");
+        CHECK(sa.port() == 0);
+        CHECK(sa.length() == 0);
 
-        sa = SockAddr::Inet4("127.0.0.1", 0);
+        sa = SockAddr::Inet4("127.0.0.1", 10);
         CHECK(sa.ip() == "127.0.0.1");
+        CHECK(sa.port() == 10);
+        CHECK(sa.length() == sizeof(sockaddr_in));
 
-        sa = SockAddr::Inet6("::1", 0);
+        sa = SockAddr::Inet6("::1", 20);
         CHECK(sa.ip() == "::1");
+        CHECK(sa.port() == 20);
+        CHECK(sa.length() == sizeof(sockaddr_in6));
 
+        #ifndef _WIN32
         sa = SockAddr::Unix("/path");
+        CHECK(sa.length() == sizeof(sockaddr_un));
         CHECK_THROWS(sa.ip());
+        CHECK_THROWS(sa.port());
+        #endif
     }
 }

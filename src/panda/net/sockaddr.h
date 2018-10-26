@@ -42,7 +42,9 @@ struct SockAddr {
     explicit
     operator bool () const { return sa.sa_family != AF_UNSPEC; }
 
-    string ip () const;
+    string   ip     () const;
+    uint16_t port   () const;
+    size_t   length () const;
 
     #ifndef _WIN32
 

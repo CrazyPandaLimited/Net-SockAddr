@@ -56,12 +56,33 @@ bool SockAddr::operator== (const SockAddr& oth) const {
 }
 
 string SockAddr::ip () const {
-   switch (sa.sa_family) {
-       case AF_UNSPEC: return {};
-       case AF_INET:   return inet4().ip();
-       case AF_INET6:  return inet6().ip();
-       default: throw _not_supported();
-   }
+    switch (sa.sa_family) {
+        case AF_UNSPEC: return {};
+        case AF_INET:   return inet4().ip();
+        case AF_INET6:  return inet6().ip();
+        default: throw _not_supported();
+    }
+}
+
+uint16_t SockAddr::port () const {
+    switch (sa.sa_family) {
+        case AF_UNSPEC: return 0;
+        case AF_INET:   return inet4().port();
+        case AF_INET6:  return inet6().port();
+        default: throw _not_supported();
+    }
+}
+
+size_t SockAddr::length () const {
+    switch (sa.sa_family) {
+        case AF_UNSPEC: return 0;
+        case AF_INET:   return sizeof(sa4);
+        case AF_INET6:  return sizeof(sa6);
+        #ifndef _WIN32
+        case AF_UNIX:   return sizeof(sau);
+        #endif
+        default: throw _not_supported();
+    }
 }
 
 std::ostream& operator<< (std::ostream& os, const SockAddr& sa) {
