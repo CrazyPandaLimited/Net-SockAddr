@@ -10,7 +10,6 @@ my %params = (
     INC           => '-Isrc',
     BIN_DEPS      => ['XS::Framework', 'Test::Catch', 'Panda::Export'],
     CCFLAGS       => '-Wall -Wextra',
-    OPTIMIZE      => '-O2',
     test          => {SRC => 't'},
     TEST_REQUIRES => {'Test::Exception' => 0},
     BIN_SHARE     => {
