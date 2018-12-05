@@ -15,10 +15,17 @@ using std::error_code;
 using std::system_error;
 using std::make_error_code;
 
-const in_addr SockAddr::Inet4::ADDR_ANY       = {htonl(INADDR_ANY)};
-const in_addr SockAddr::Inet4::ADDR_LOOPBACK  = {htonl(INADDR_LOOPBACK)};
-const in_addr SockAddr::Inet4::ADDR_BROADCAST = {htonl(INADDR_BROADCAST)};
-const in_addr SockAddr::Inet4::ADDR_NONE      = {htonl(INADDR_NONE)};
+// this function is fix for clang build, see MEIACORE-723 for details
+// htonl is statement in clang, but not exression, it cannot be used dirrectly in var initializers
+template <typename T>
+static constexpr in_addr to_inaddr(T src) {
+    return {htonl(src)};
+}
+
+const in_addr SockAddr::Inet4::ADDR_ANY       = to_inaddr(INADDR_ANY);
+const in_addr SockAddr::Inet4::ADDR_LOOPBACK  = to_inaddr(INADDR_LOOPBACK);
+const in_addr SockAddr::Inet4::ADDR_BROADCAST = to_inaddr(INADDR_BROADCAST);
+const in_addr SockAddr::Inet4::ADDR_NONE      = to_inaddr(INADDR_NONE);
 
 const in6_addr SockAddr::Inet6::ADDR_ANY      = IN6ADDR_ANY_INIT;
 const in6_addr SockAddr::Inet6::ADDR_LOOPBACK = IN6ADDR_LOOPBACK_INIT;
