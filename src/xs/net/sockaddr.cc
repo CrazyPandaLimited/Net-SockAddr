@@ -4,10 +4,10 @@ namespace xs { namespace net {
 
     using panda::net::SockAddr;
 
-    const SockAddr* _in_sockaddr_ptr (pTHX_ SV* arg) {
+    SockAddr* _in_sockaddr_ptr (pTHX_ SV* arg) {
         if (!SvOK(arg)) return nullptr;
         if (!Sv(arg).is_object_ref()) throw "invalid sockaddr";
-        return (const panda::net::SockAddr*)SvPVX(SvRV(arg));
+        return (panda::net::SockAddr*)SvPVX(SvRV(arg));
     }
 
     SockAddr _in_sockaddr (pTHX_ SV* arg) {
