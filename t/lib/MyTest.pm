@@ -5,7 +5,7 @@ use Test::More;
 use Net::SockAddr;
 use Test::Exception;
 
-XS::Loader::load_tests();
+XS::Loader::load();
 
 sub import {
     my $caller = caller();

@@ -4,18 +4,14 @@ use XS::Install;
 
 my %params = (
     NAME          => 'Net::SockAddr',
-    ABSTRACT_FROM => 'lib/Net/SockAddr.pod',
     CPLUS         => 11,
     SRC           => ['src'],
     INC           => '-Isrc',
-    BIN_DEPS      => ['XS::Framework', 'Test::Catch', 'Panda::Export'],
+    BIN_DEPS      => ['XS::Framework', 'Panda::Export'],
     CCFLAGS       => '-Wall -Wextra',
-    test          => {SRC => 't'},
     TEST_REQUIRES => {'Test::Exception' => 0},
-    BIN_SHARE     => {
-        CPLUS    => 11,
-        INCLUDE  => {'src' => '/'},
-    },
+    BIN_SHARE     => {INCLUDE  => {'src' => '/'}},
+    test          => {SRC => 't', BIN_DEPS => 'Test::Catch'},
 );
 
 write_makefile(%params);
