@@ -109,7 +109,7 @@ std::ostream& operator<< (std::ostream& os, const SockAddr& sa) {
     return os;
 }
 
-SockAddr::Inet4::Inet4 (const std::string_view& ip, uint16_t port) {
+SockAddr::Inet4::Inet4 (const string_view& ip, uint16_t port) {
     _NULL_TERMINATE(ip, ipstr);
     memset(&sa4, 0, sizeof(sa4));
     sa4.sin_family = AF_INET;
@@ -134,7 +134,7 @@ string SockAddr::Inet4::ip () const {
     return ret;
 }
 
-SockAddr::Inet6::Inet6 (const std::string_view& ip, uint16_t port, uint32_t scope_id, uint32_t flowinfo) {
+SockAddr::Inet6::Inet6 (const string_view& ip, uint16_t port, uint32_t scope_id, uint32_t flowinfo) {
     memset(&sa6, 0, sizeof(sa6));
     sa6.sin6_family   = AF_INET6;
     sa6.sin6_port     = htons(port);
@@ -142,7 +142,7 @@ SockAddr::Inet6::Inet6 (const std::string_view& ip, uint16_t port, uint32_t scop
 
     int err;
     auto idx = ip.find('%');
-    if (idx == std::string_view::npos) {
+    if (idx == string_view::npos) {
         sa6.sin6_scope_id = scope_id;
         _NULL_TERMINATE(ip, ipstr);
         err = inet_pton6(ipstr, (unsigned char*)&sa6.sin6_addr);
@@ -186,7 +186,7 @@ string SockAddr::Inet6::ip () const {
 
 #ifndef _WIN32
 
-SockAddr::Unix::Unix (const std::string_view& path) {
+SockAddr::Unix::Unix (const string_view& path) {
     if (path.length() >= sizeof(sau.sun_path)) throw system_error(make_error_code(errc::invalid_argument));
     sau.sun_family = AF_UNIX;
     memcpy(sau.sun_path, path.data(), path.length());

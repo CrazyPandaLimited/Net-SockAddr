@@ -40,7 +40,7 @@ namespace xs { namespace net {
             #endif
             default: throw "invalid sockaddr family";
         }
-        auto base = Simple(std::string_view(reinterpret_cast<const char*>(&var), sizeof(var)));
+        auto base = Simple(panda::string_view(reinterpret_cast<const char*>(&var), sizeof(var)));
         return stash.bless(base).ref();
     }
 

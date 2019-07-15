@@ -6,7 +6,7 @@ using namespace xs;
 using namespace xs::exp;
 using namespace panda::net;
 using panda::string;
-using std::string_view;
+using panda::string_view;
 
 template <class T>
 static inline string_view addr2sv (const T& addr) { return string_view((const char*)&addr, sizeof(T)); }

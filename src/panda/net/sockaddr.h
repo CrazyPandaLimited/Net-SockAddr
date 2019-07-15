@@ -82,7 +82,7 @@ struct SockAddr::Inet4 : SockAddr {
     Inet4 (const sockaddr_in* sa) : SockAddr(sa)        {}
     Inet4 (const Inet4& oth)      : SockAddr(oth.get()) {}
 
-    Inet4 (const std::string_view& ip, uint16_t port);
+    Inet4 (const string_view& ip, uint16_t port);
     Inet4 (const in_addr& addr, uint16_t port);
 
     const in_addr& addr () const { return sa4.sin_addr; }
@@ -104,7 +104,7 @@ struct SockAddr::Inet6 : SockAddr {
     Inet6 (const sockaddr_in6* sa) : SockAddr(sa)        {}
     Inet6 (const Inet6& oth)       : SockAddr(oth.get()) {}
 
-    Inet6 (const std::string_view& ip, uint16_t port, uint32_t scope_id = 0, uint32_t flowinfo = 0);
+    Inet6 (const string_view& ip, uint16_t port, uint32_t scope_id = 0, uint32_t flowinfo = 0);
     Inet6 (const in6_addr& addr, uint16_t port, uint32_t scope_id = 0, uint32_t flowinfo = 0);
 
     const in6_addr& addr () const { return sa6.sin6_addr; }
@@ -125,9 +125,9 @@ struct SockAddr::Unix : SockAddr {
     Unix (const sockaddr_un* sa) : SockAddr(sa)        {}
     Unix (const Unix& oth)       : SockAddr(oth.get()) {}
 
-    Unix (const std::string_view& path);
+    Unix (const string_view& path);
 
-    std::string_view path () const { return (char*)sau.sun_path; }
+    string_view path () const { return (char*)sau.sun_path; }
 
     const sockaddr_un* get () const { return &sau; }
     sockaddr_un*       get ()       { return &sau; }
