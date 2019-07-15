@@ -5,6 +5,7 @@
     #include <winsock2.h>
 #else
     #include <netinet/in.h>
+    #include <sys/socket.h>
     #include <sys/un.h>
 #endif
 
