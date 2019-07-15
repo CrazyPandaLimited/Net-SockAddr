@@ -1,4 +1,5 @@
 #include "sockaddr.h"
+#include <ostream>
 #include <net/if.h>
 #include "pton.impl"
 #include <system_error>
