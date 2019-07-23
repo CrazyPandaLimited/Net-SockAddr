@@ -20,19 +20,14 @@ BOOT {
     Stash("Net::SockAddr::Inet6", GV_ADD).inherit(me);
     Stash("Net::SockAddr::Unix",  GV_ADD).inherit(me);
     
-    constant_t constants[] = {
-        {"AF_UNSPEC", AF_UNSPEC, NULL},
-        {"AF_INET",   AF_INET,   NULL},
-        {"AF_INET6",  AF_INET6,  NULL},
+    create_constants(me, {
+        {"AF_UNSPEC", AF_UNSPEC},
+        {"AF_INET",   AF_INET  },
+        {"AF_INET6",  AF_INET6 },
         #ifndef _WIN32
-        {"AF_UNIX",   AF_UNIX,   NULL},
+        {"AF_UNIX",   AF_UNIX  },
         #endif
-        {"autoexport", 1, NULL},
-        {NULL, 0, NULL}
-    };
-    create_constants(aTHX_ me, constants);
-    
-    create_constants(aTHX_ me, Hash({
+        
         {"INADDR_ANY",       Simple(addr2sv(SockAddr::Inet4::ADDR_ANY))          },
         {"INADDR_LOOPBACK",  Simple(addr2sv(SockAddr::Inet4::ADDR_LOOPBACK))     },
         {"INADDR_BROADCAST", Simple(addr2sv(SockAddr::Inet4::ADDR_BROADCAST))    },
@@ -42,8 +37,9 @@ BOOT {
         {"SA_ANY_ANY",       xs::out<SockAddr>(SockAddr::Inet4::SA_ANY_ANY)      },
         {"SA_LOOPBACK_ANY",  xs::out<SockAddr>(SockAddr::Inet4::SA_LOOPBACK_ANY) },
         {"SA6_ANY_ANY",      xs::out<SockAddr>(SockAddr::Inet6::SA_ANY_ANY)      },
-        {"SA6_LOOPBACK_ANY", xs::out<SockAddr>(SockAddr::Inet6::SA_LOOPBACK_ANY) },
-    }));
+        {"SA6_LOOPBACK_ANY", xs::out<SockAddr>(SockAddr::Inet6::SA_LOOPBACK_ANY) }
+    });
+    autoexport(me);
 }
 
 SockAddr SockAddr::new (SockAddr oth) {

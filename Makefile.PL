@@ -7,7 +7,7 @@ my %params = (
     CPLUS         => 11,
     SRC           => ['src'],
     INC           => '-Isrc',
-    BIN_DEPS      => ['XS::Framework', 'Panda::Export'],
+    BIN_DEPS      => ['XS::Framework', 'Export::XS'],
     CCFLAGS       => '-Wall -Wextra',
     TEST_REQUIRES => {'Test::Exception' => 0},
     BIN_SHARE     => {INCLUDE  => {'src' => '/'}},
