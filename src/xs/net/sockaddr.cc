@@ -4,15 +4,15 @@ namespace xs { namespace net {
 
     using panda::net::SockAddr;
 
-    SockAddr* _in_sockaddr_ptr (pTHX_ SV* arg) {
+    SockAddr* _in_sockaddr_ptr (SV* arg) {
         if (!SvOK(arg)) return nullptr;
         if (!Sv(arg).is_object_ref()) throw "invalid sockaddr";
         return (panda::net::SockAddr*)SvPVX(SvRV(arg));
     }
 
-    SockAddr _in_sockaddr (pTHX_ SV* arg) {
+    SockAddr _in_sockaddr (SV* arg) {
         if (!SvOK(arg)) return {};
-        if (Sv(arg).is_object_ref()) return *_in_sockaddr_ptr(aTHX_ arg);
+        if (Sv(arg).is_object_ref()) return *_in_sockaddr_ptr(arg);
         if (!SvPOK(arg) || SvCUR(arg) < sizeof(sockaddr)) throw "invalid sockaddr";
         auto sa = (const sockaddr*)SvPVX(arg);
         size_t minlen;
@@ -29,7 +29,7 @@ namespace xs { namespace net {
         return sa;
     }
 
-    Sv _create_sockaddr (pTHX_ const panda::net::SockAddr& var) {
+    Sv _create_sockaddr (const panda::net::SockAddr& var) {
         Stash stash;
         switch (var.family()) {
             case AF_UNSPEC : return Sv::undef;
