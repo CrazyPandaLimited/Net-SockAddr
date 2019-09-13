@@ -28,16 +28,16 @@ BOOT {
         {"AF_UNIX",   AF_UNIX  },
         #endif
         
-        {"INADDR_ANY",       Simple(addr2sv(SockAddr::Inet4::ADDR_ANY))          },
-        {"INADDR_LOOPBACK",  Simple(addr2sv(SockAddr::Inet4::ADDR_LOOPBACK))     },
-        {"INADDR_BROADCAST", Simple(addr2sv(SockAddr::Inet4::ADDR_BROADCAST))    },
-        {"INADDR_NONE",      Simple(addr2sv(SockAddr::Inet4::ADDR_NONE))         },
-        {"IN6ADDR_ANY",      Simple(addr2sv(SockAddr::Inet6::ADDR_ANY))          },
-        {"IN6ADDR_LOOPBACK", Simple(addr2sv(SockAddr::Inet6::ADDR_LOOPBACK))     },
-        {"SA_ANY_ANY",       xs::out<SockAddr>(SockAddr::Inet4::SA_ANY_ANY)      },
-        {"SA_LOOPBACK_ANY",  xs::out<SockAddr>(SockAddr::Inet4::SA_LOOPBACK_ANY) },
-        {"SA6_ANY_ANY",      xs::out<SockAddr>(SockAddr::Inet6::SA_ANY_ANY)      },
-        {"SA6_LOOPBACK_ANY", xs::out<SockAddr>(SockAddr::Inet6::SA_LOOPBACK_ANY) }
+        {"INADDR_ANY",       Simple(addr2sv(SockAddr::Inet4::addr_any))          },
+        {"INADDR_LOOPBACK",  Simple(addr2sv(SockAddr::Inet4::addr_loopback))     },
+        {"INADDR_BROADCAST", Simple(addr2sv(SockAddr::Inet4::addr_broadcast))    },
+        {"INADDR_NONE",      Simple(addr2sv(SockAddr::Inet4::addr_none))         },
+        {"IN6ADDR_ANY",      Simple(addr2sv(SockAddr::Inet6::addr_any))          },
+        {"IN6ADDR_LOOPBACK", Simple(addr2sv(SockAddr::Inet6::addr_loopback))     },
+        {"SA_ANY_ANY",       xs::out<SockAddr>(SockAddr::Inet4::sa_any)          },
+        {"SA_LOOPBACK_ANY",  xs::out<SockAddr>(SockAddr::Inet4::sa_loopback)     },
+        {"SA6_ANY_ANY",      xs::out<SockAddr>(SockAddr::Inet6::sa_any)          },
+        {"SA6_LOOPBACK_ANY", xs::out<SockAddr>(SockAddr::Inet6::sa_loopback)     }
     });
     autoexport(me);
 }
@@ -64,7 +64,11 @@ string_view SockAddr::get () {
         case AF_UNSPEC : XSRETURN_UNDEF;
         case AF_INET   : len = sizeof(sockaddr_in); break;
         case AF_INET6  : len = sizeof(sockaddr_in6); break;
+#ifndef _WIN32
         default        : len = sizeof(sockaddr_un); break; // AF_UNIX
+#else
+        default        : XSRETURN_UNDEF;
+#endif
     }
     RETVAL = string_view((const char*)THIS->get(), len);
 }

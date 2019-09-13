@@ -1,8 +1,10 @@
 #pragma once
 #include <panda/string.h>
 #include <panda/string_view.h>
+#include <utility>
 #ifdef _WIN32
     #include <winsock2.h>
+    #include <Ws2tcpip.h>
 #else
     #include <netinet/in.h>
     #include <sys/socket.h>
@@ -13,6 +15,8 @@ namespace panda { namespace net {
 
 static const int IP4_MAX_ADDRSTRLEN = 16;
 static const int IP6_MAX_ADDRSTRLEN = 46;
+
+using sa_family_t = decltype(std::declval<sockaddr>().sa_family);
 
 struct SockAddr {
     struct Inet4;
@@ -73,12 +77,12 @@ protected:
 std::ostream& operator<< (std::ostream&, const SockAddr&);
 
 struct SockAddr::Inet4 : SockAddr {
-    static const in_addr ADDR_ANY;
-    static const in_addr ADDR_LOOPBACK;
-    static const in_addr ADDR_BROADCAST;
-    static const in_addr ADDR_NONE;
-    static const Inet4   SA_ANY_ANY;
-    static const Inet4   SA_LOOPBACK_ANY;
+    static const in_addr addr_any;
+    static const in_addr addr_loopback;
+    static const in_addr addr_broadcast;
+    static const in_addr addr_none;
+    static const Inet4   sa_any;
+    static const Inet4   sa_loopback;
 
     Inet4 (const sockaddr_in* sa) : SockAddr(sa)        {}
     Inet4 (const Inet4& oth)      : SockAddr(oth.get()) {}
@@ -97,10 +101,10 @@ struct SockAddr::Inet4 : SockAddr {
 };
 
 struct SockAddr::Inet6 : SockAddr {
-    static const in6_addr ADDR_ANY;
-    static const in6_addr ADDR_LOOPBACK;
-    static const Inet6    SA_ANY_ANY;
-    static const Inet6    SA_LOOPBACK_ANY;
+    static const in6_addr addr_any;
+    static const in6_addr addr_loopback;
+    static const Inet6    sa_any;
+    static const Inet6    sa_loopback;
 
     Inet6 (const sockaddr_in6* sa) : SockAddr(sa)        {}
     Inet6 (const Inet6& oth)       : SockAddr(oth.get()) {}

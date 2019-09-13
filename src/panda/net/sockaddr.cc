@@ -1,6 +1,12 @@
 #include "sockaddr.h"
 #include <ostream>
-#include <net/if.h>
+
+#ifdef _WIN32
+    #include <winsock2.h>
+#else
+    #include <net/if.h>
+#endif
+
 #include "pton.impl"
 #include <system_error>
 
@@ -23,18 +29,18 @@ static constexpr in_addr to_inaddr(T src) {
     return {htonl(src)};
 }
 
-const in_addr SockAddr::Inet4::ADDR_ANY       = to_inaddr(INADDR_ANY);
-const in_addr SockAddr::Inet4::ADDR_LOOPBACK  = to_inaddr(INADDR_LOOPBACK);
-const in_addr SockAddr::Inet4::ADDR_BROADCAST = to_inaddr(INADDR_BROADCAST);
-const in_addr SockAddr::Inet4::ADDR_NONE      = to_inaddr(INADDR_NONE);
+const in_addr SockAddr::Inet4::addr_any       = to_inaddr(INADDR_ANY);
+const in_addr SockAddr::Inet4::addr_loopback  = to_inaddr(INADDR_LOOPBACK);
+const in_addr SockAddr::Inet4::addr_broadcast = to_inaddr(INADDR_BROADCAST);
+const in_addr SockAddr::Inet4::addr_none      = to_inaddr(INADDR_NONE);
 
-const in6_addr SockAddr::Inet6::ADDR_ANY      = IN6ADDR_ANY_INIT;
-const in6_addr SockAddr::Inet6::ADDR_LOOPBACK = IN6ADDR_LOOPBACK_INIT;
+const in6_addr SockAddr::Inet6::addr_any      = IN6ADDR_ANY_INIT;
+const in6_addr SockAddr::Inet6::addr_loopback = IN6ADDR_LOOPBACK_INIT;
 
-const SockAddr::Inet4 SockAddr::Inet4::SA_ANY_ANY     (SockAddr::Inet4::ADDR_ANY, 0);
-const SockAddr::Inet4 SockAddr::Inet4::SA_LOOPBACK_ANY(SockAddr::Inet4::ADDR_LOOPBACK, 0);
-const SockAddr::Inet6 SockAddr::Inet6::SA_ANY_ANY     (SockAddr::Inet6::ADDR_ANY, 0);
-const SockAddr::Inet6 SockAddr::Inet6::SA_LOOPBACK_ANY(SockAddr::Inet6::ADDR_LOOPBACK, 0);
+const SockAddr::Inet4 SockAddr::Inet4::sa_any     (SockAddr::Inet4::addr_any, 0);
+const SockAddr::Inet4 SockAddr::Inet4::sa_loopback(SockAddr::Inet4::addr_loopback, 0);
+const SockAddr::Inet6 SockAddr::Inet6::sa_any     (SockAddr::Inet6::addr_any, 0);
+const SockAddr::Inet6 SockAddr::Inet6::sa_loopback(SockAddr::Inet6::addr_loopback, 0);
 
 static system_error _not_supported () { return system_error(make_error_code(errc::address_family_not_supported)); }
 
