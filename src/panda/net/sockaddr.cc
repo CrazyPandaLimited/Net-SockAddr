@@ -26,7 +26,8 @@ using std::make_error_code;
 // htonl is statement in clang, but not exression, it cannot be used dirrectly in var initializers
 template <typename T>
 static constexpr in_addr to_inaddr(T src) {
-    return {htonl(src)};
+    auto ia = htonl(src);
+    return in_addr{ reinterpret_cast<const in_addr&>(ia) };
 }
 
 const in_addr SockAddr::Inet4::addr_any       = to_inaddr(INADDR_ANY);
