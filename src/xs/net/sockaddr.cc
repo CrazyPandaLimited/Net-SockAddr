@@ -4,11 +4,9 @@ namespace xs { namespace net {
 
 using panda::net::SockAddr;
 
-static PERL_THREAD_LOCAL struct {
-    Stash s1 = Stash("Net::SockAddr::Inet4", GV_ADD);
-    Stash s2 = Stash("Net::SockAddr::Inet6", GV_ADD);
-    Stash s3 = Stash("Net::SockAddr::Unix", GV_ADD);
-} tls;
+static PERL_THREAD_LOCAL HV* s1 = gv_stashpvs("Net::SockAddr::Inet4", GV_ADD);
+static PERL_THREAD_LOCAL HV* s2 = gv_stashpvs("Net::SockAddr::Inet6", GV_ADD);
+static PERL_THREAD_LOCAL HV* s3 = gv_stashpvs("Net::SockAddr::Unix", GV_ADD);
 
 SockAddr* _in_sockaddr_ptr (SV* arg) {
     if (!SvOK(arg)) return nullptr;
@@ -39,10 +37,10 @@ Sv _create_sockaddr (const panda::net::SockAddr& var) {
     Stash stash;
     switch (var.family()) {
         case AF_UNSPEC : return Sv::undef;
-        case AF_INET   : stash = tls.s1; break;
-        case AF_INET6  : stash = tls.s2; break;
+        case AF_INET   : stash = s1; break;
+        case AF_INET6  : stash = s2; break;
         #ifndef _WIN32
-        case AF_UNIX   : stash = tls.s3; break;
+        case AF_UNIX   : stash = s3; break;
         #endif
         default: throw "invalid sockaddr family";
     }
