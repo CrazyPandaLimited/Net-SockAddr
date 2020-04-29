@@ -51,7 +51,7 @@ SockAddr::SockAddr (const sockaddr* _sa) {
         case AF_INET   : sa4 = *(const sockaddr_in*)_sa; break;
         case AF_INET6  : sa6 = *(const sockaddr_in6*)_sa; break;
         #ifndef _WIN32
-        case AF_UNIX   : sau = *(const sockaddr_un*)_sa; break;
+        case AF_UNIX   : sa.sa_family = AF_UNIX; strcpy(sau.sun_path, ((const sockaddr_un*)_sa)->sun_path); break;
         #endif
         default        : throw _not_supported();
     }
@@ -198,9 +198,7 @@ SockAddr::Unix::Unix (const string_view& path) {
     if (path.length() >= sizeof(sau.sun_path)) throw system_error(make_error_code(errc::invalid_argument));
     sau.sun_family = AF_UNIX;
     memcpy(sau.sun_path, path.data(), path.length());
-    // as the whole sizeof(sau.sun_path) is used as perl's string, leaving some bits uninitialized might lead to UB
-    auto space_left = sizeof(sau.sun_path) - path.length();
-    memset(sau.sun_path + path.length(), 0, space_left);
+    sau.sun_path[path.length()] = 0;
 }
 
 #endif

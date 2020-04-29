@@ -17,7 +17,7 @@ SockAddr* _in_sockaddr_ptr (SV* arg) {
 SockAddr _in_sockaddr (SV* arg) {
     if (!SvOK(arg)) return {};
     if (Sv(arg).is_object_ref()) return *_in_sockaddr_ptr(arg);
-    if (!SvPOK(arg) || SvCUR(arg) < sizeof(sockaddr)) throw "invalid sockaddr";
+    if (!SvPOK(arg) || SvCUR(arg) < sizeof(sa_family_t)) throw "invalid sockaddr";
     auto sa = (const sockaddr*)SvPVX(arg);
     size_t minlen;
     switch (sa->sa_family) {
@@ -25,7 +25,7 @@ SockAddr _in_sockaddr (SV* arg) {
         case AF_INET   : minlen = sizeof(sockaddr_in); break;
         case AF_INET6  : minlen = sizeof(sockaddr_in6); break;
         #ifndef _WIN32
-        case AF_UNIX   : minlen = sizeof(sockaddr_un); break;
+        case AF_UNIX   : minlen = sizeof(sa_family_t) + 1 /* null-byte */; break;
         #endif
         default: throw "invalid sockaddr";
     }
@@ -35,16 +35,17 @@ SockAddr _in_sockaddr (SV* arg) {
 
 Sv _create_sockaddr (const panda::net::SockAddr& var) {
     Stash stash;
+    size_t sz = sizeof(var);
     switch (var.family()) {
         case AF_UNSPEC : return Sv::undef;
         case AF_INET   : stash = s1; break;
         case AF_INET6  : stash = s2; break;
         #ifndef _WIN32
-        case AF_UNIX   : stash = s3; break;
+        case AF_UNIX   : stash = s3; sz = sizeof(sa_family_t) + strlen(((const SockAddr::Unix&)var).get()->sun_path) + 1; break;
         #endif
         default: throw "invalid sockaddr family";
     }
-    auto base = Simple(panda::string_view(reinterpret_cast<const char*>(&var), sizeof(var)));
+    auto base = Simple(panda::string_view(reinterpret_cast<const char*>(&var), sz));
     return stash.bless(base).ref();
 }
 
