@@ -41,7 +41,7 @@ Sv _create_sockaddr (const panda::net::SockAddr& var) {
         case AF_INET   : stash = s1; break;
         case AF_INET6  : stash = s2; break;
         #ifndef _WIN32
-        case AF_UNIX   : stash = s3; sz = sizeof(sa_family_t) + strlen(((const SockAddr::Unix&)var).get()->sun_path) + 1; break;
+        case AF_UNIX   : stash = s3; sz = sizeof(sa_family_t) + ((const SockAddr::Unix&)var).path().length() + 1; break;
         #endif
         default: throw "invalid sockaddr family";
     }
