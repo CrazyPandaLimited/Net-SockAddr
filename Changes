@@ -1,3 +1,5 @@
+1.0.2    xx.xx.2020
+         - fix unitialized bits usage in SockAddr::Unix when converted to Perl
 1.0.1    17.02.2020
          - fix freebsd thread_local global destruction
          - fix older compilers

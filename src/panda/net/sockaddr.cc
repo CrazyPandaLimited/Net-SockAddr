@@ -198,7 +198,9 @@ SockAddr::Unix::Unix (const string_view& path) {
     if (path.length() >= sizeof(sau.sun_path)) throw system_error(make_error_code(errc::invalid_argument));
     sau.sun_family = AF_UNIX;
     memcpy(sau.sun_path, path.data(), path.length());
-    sau.sun_path[path.length()] = 0;
+    // as the whole sizeof(sau.sun_path) is used as perl's string, leaving some bits uninitialized might lead to UB
+    auto space_left = sizeof(sau.sun_path) - path.length();
+    memset(sau.sun_path + path.length(), 0, space_left);
 }
 
 #endif
