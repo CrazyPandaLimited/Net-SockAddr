@@ -62,7 +62,9 @@ struct SockAddr {
         if (success) {
             // length is the actual size
             validate(&sa, length);
-            assure_correct(length);
+            #ifndef _WIN32
+            assure_correct_unix(length);
+            #endif
         }
     }
 
@@ -76,6 +78,7 @@ struct SockAddr {
 
     Unix& unix () const { return *((Unix*)this); }
 
+    void assure_correct_unix(size_t length) noexcept;
     #endif
 
 protected:
@@ -87,7 +90,6 @@ protected:
         sockaddr_un  sau;
         #endif
     };
-    void assure_correct(size_t length) noexcept;
 };
 
 std::ostream& operator<< (std::ostream&, const SockAddr&);

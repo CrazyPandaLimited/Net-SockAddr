@@ -71,11 +71,17 @@ void SockAddr::validate(const sockaddr* sa, size_t length) {
 
 SockAddr::SockAddr (const sockaddr* _sa, size_t length) {
     validate(_sa, length);
-    memcpy(&this->sa, _sa, length);
-    assure_correct(length);
+    switch (_sa->sa_family) {
+        case AF_UNSPEC : sa.sa_family = AF_UNSPEC; break;
+        case AF_INET   : sa4 = *(const sockaddr_in*)_sa; break;
+        case AF_INET6  : sa6 = *(const sockaddr_in6*)_sa; break;
+        #ifndef _WIN32
+        case AF_UNIX   : memcpy(&this->sa, _sa, length); assure_correct_unix(length); break;
+        #endif
+    }
 }
 
-void SockAddr::assure_correct(size_t length) noexcept {
+void SockAddr::assure_correct_unix(size_t length) noexcept {
     switch (sa.sa_family) {
 #ifndef _WIN32
     case AF_UNIX: {
