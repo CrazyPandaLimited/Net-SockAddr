@@ -40,7 +40,7 @@ TEST_CASE("base") {
 
     SECTION("invalid ctor") {
         SockAddr me = (SockAddr)SockAddr::Inet4("10.10.10.2", 1234);
-        CHECK_THROWS(SockAddr(me.get(), 5));
+        CHECK_THROWS(SockAddr(me.get(), 1));
     }
 
     SECTION("==") {
