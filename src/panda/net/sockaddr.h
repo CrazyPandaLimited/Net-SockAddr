@@ -22,13 +22,16 @@ struct SockAddr {
     struct Inet4;
     struct Inet6;
 
+    static bool is_valid(const sockaddr* sa, size_t length) noexcept;
+    static void validate(const sockaddr* sa, size_t length);
+
     SockAddr () { sa.sa_family = AF_UNSPEC; }
 
-    SockAddr (const sockaddr* sa);
+    SockAddr (const sockaddr* sa, size_t length);
     SockAddr (const sockaddr_in*  sa) : sa4(*sa) {}
     SockAddr (const sockaddr_in6* sa) : sa6(*sa) {}
 
-    SockAddr (const SockAddr& oth) : SockAddr(&oth.sa) {}
+    SockAddr (const SockAddr& oth) { memcpy(&sa, &oth.sa, oth.length()); }
 
     sa_family_t family () const { return sa.sa_family; }
 
@@ -41,6 +44,7 @@ struct SockAddr {
     const sockaddr* get () const { return &sa; }
     sockaddr*       get ()       { return &sa; }
 
+    SockAddr& operator=(const SockAddr& oth);
     bool operator== (const SockAddr& oth) const;
     bool operator!= (const SockAddr& oth) const { return !operator==(oth); }
 
@@ -51,11 +55,24 @@ struct SockAddr {
     uint16_t port   () const;
     size_t   length () const;
 
+    template<typename Function>
+    void assign_foreign(Function&& fn) {
+        size_t length = sizeof (sa6); // max size
+        bool success = fn(&sa, &length);
+        if (success) {
+            // length is the actual size
+            validate(&sa, length);
+            #ifndef _WIN32
+                if (sa.sa_family == AF_UNIX) assure_correct_unix(length);
+            #endif
+        }
+    }
+
     #ifndef _WIN32
 
     struct Unix;
 
-    SockAddr (const sockaddr_un* sa) : sau(*sa) {}
+    SockAddr (const sockaddr_un* sa, size_t length) : SockAddr((const sockaddr*)sa, length){}
 
     bool is_unix () const { return family() == AF_UNIX; }
 
@@ -72,6 +89,7 @@ protected:
         sockaddr_un  sau;
         #endif
     };
+    void assure_correct_unix(size_t length) noexcept;
 };
 
 std::ostream& operator<< (std::ostream&, const SockAddr&);
@@ -127,8 +145,8 @@ struct SockAddr::Inet6 : SockAddr {
 #ifndef _WIN32
 
 struct SockAddr::Unix : SockAddr {
-    Unix (const sockaddr_un* sa) : SockAddr(sa)        {}
-    Unix (const Unix& oth)       : SockAddr(oth.get()) {}
+    Unix (const sockaddr_un* sa, size_t length) : SockAddr(sa, length) {}
+    Unix (const Unix& oth)                      : SockAddr(oth) {}
 
     Unix (const string_view& path);
 

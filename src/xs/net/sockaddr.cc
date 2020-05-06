@@ -18,30 +18,21 @@ SockAddr _in_sockaddr (SV* arg) {
     if (!SvOK(arg)) return {};
     if (Sv(arg).is_object_ref()) return *_in_sockaddr_ptr(arg);
     if (!SvPOK(arg) || SvCUR(arg) < sizeof(sa_family_t)) throw "invalid sockaddr";
+
+    size_t sz =  (size_t)SvCUR(arg);
     auto sa = (const sockaddr*)SvPVX(arg);
-    size_t minlen;
-    switch (sa->sa_family) {
-        case AF_UNSPEC : return {};
-        case AF_INET   : minlen = sizeof(sockaddr_in); break;
-        case AF_INET6  : minlen = sizeof(sockaddr_in6); break;
-        #ifndef _WIN32
-        case AF_UNIX   : minlen = sizeof(sa_family_t) + 1 /* null-byte */; break;
-        #endif
-        default: throw "invalid sockaddr";
-    }
-    if (SvCUR(arg) < minlen) throw "invalid sockaddr";
-    return sa;
+    return SockAddr(sa, sz);
 }
 
 Sv _create_sockaddr (const panda::net::SockAddr& var) {
     Stash stash;
-    size_t sz = sizeof(var);
+    size_t sz = var.length();
     switch (var.family()) {
         case AF_UNSPEC : return Sv::undef;
         case AF_INET   : stash = s1; break;
         case AF_INET6  : stash = s2; break;
         #ifndef _WIN32
-        case AF_UNIX   : stash = s3; sz = sizeof(sa_family_t) + ((const SockAddr::Unix&)var).path().length() + 1; break;
+        case AF_UNIX   : stash = s3; break;
         #endif
         default: throw "invalid sockaddr family";
     }

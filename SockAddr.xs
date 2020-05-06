@@ -62,10 +62,10 @@ string_view SockAddr::get () {
     size_t len;
     switch (THIS->family()) {
         case AF_UNSPEC : XSRETURN_UNDEF;
-        case AF_INET   : len = sizeof(sockaddr_in); break;
-        case AF_INET6  : len = sizeof(sockaddr_in6); break;
+        case AF_INET   :
+        case AF_INET6  : len = THIS->length(); break;
 #ifndef _WIN32
-        default        : len = sizeof(sa_family_t) + strlen(((SockAddr::Unix*)THIS)->get()->sun_path) + 1; break; // AF_UNIX
+        default        : len = THIS->length(); break; // AF_UNIX
 #else
         default        : XSRETURN_UNDEF;
 #endif

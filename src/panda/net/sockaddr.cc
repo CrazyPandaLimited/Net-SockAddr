@@ -43,28 +43,76 @@ const SockAddr::Inet4 SockAddr::Inet4::sa_loopback(SockAddr::Inet4::addr_loopbac
 const SockAddr::Inet6 SockAddr::Inet6::sa_any     (SockAddr::Inet6::addr_any, 0);
 const SockAddr::Inet6 SockAddr::Inet6::sa_loopback(SockAddr::Inet6::addr_loopback, 0);
 
+const constexpr size_t SOCKADDR_IN_SIGNIFICANT_SZ = std::max(
+            offsetof(sockaddr_in, sin_port) + sizeof (in_port_t),
+            offsetof(sockaddr_in, sin_addr) + sizeof (in_addr));
+
+
 static system_error _not_supported () { return system_error(make_error_code(errc::address_family_not_supported)); }
 
-SockAddr::SockAddr (const sockaddr* _sa) {
-    switch (_sa->sa_family) {
-        case AF_UNSPEC : sa.sa_family = AF_UNSPEC; break;
-        case AF_INET   : sa4 = *(const sockaddr_in*)_sa; break;
-        case AF_INET6  : sa6 = *(const sockaddr_in6*)_sa; break;
+bool SockAddr::is_valid(const sockaddr *sa, size_t length) noexcept {
+    if (length < sizeof (sa_family_t)) return false;
+    #ifndef _WIN32
+    if (length > sizeof (sockaddr_un)) return false;
+    #else
+    if (length > sizeof (sockaddr_in6)) return false;
+    #endif
+
+    switch (sa->sa_family) {
+        case AF_INET   : return length >= SOCKADDR_IN_SIGNIFICANT_SZ;
+        case AF_INET6  : return length >= sizeof(sockaddr_in6);
         #ifndef _WIN32
-        case AF_UNIX   : sa.sa_family = AF_UNIX; strcpy(sau.sun_path, ((const sockaddr_un*)_sa)->sun_path); break;
+        case AF_UNIX   :
         #endif
-        default        : throw _not_supported();
+        case AF_UNSPEC : return true;
+        default        : return false;
     }
 }
+
+void SockAddr::validate(const sockaddr* sa, size_t length) {
+    if (!is_valid(sa, length)) throw system_error(make_error_code(errc::bad_address));
+}
+
+
+SockAddr::SockAddr (const sockaddr* _sa, size_t length) {
+    validate(_sa, length);
+    memcpy(&sa, _sa, length);
+    #ifndef _WIN32
+    if (sa.sa_family == AF_UNIX)  assure_correct_unix(length);
+    #endif
+}
+
+#ifndef _WIN32
+void SockAddr::assure_correct_unix(size_t length) noexcept {
+    // for further strlen checks
+    assert(sa.sa_family == AF_UNIX);
+        // write null-byte by force
+        if (length == 2) { length = 3; }
+        ((char*)&sa)[length - 1] = 0;
+}
+#endif
+
+SockAddr& SockAddr::operator=(const SockAddr& oth) {
+    if (this != &oth) {
+        memcpy(&sa, &oth.sa, oth.length());
+    }
+    return *this;
+}
+
 
 bool SockAddr::operator== (const SockAddr& oth) const {
     if (family() != oth.family()) return false;
     switch (family()) {
         case AF_UNSPEC : return true;
-        case AF_INET   : return !std::memcmp(&sa4, &oth.sa4, sizeof(sa4));
+        case AF_INET   : return !std::memcmp(&sa4, &oth.sa4, SOCKADDR_IN_SIGNIFICANT_SZ);
         case AF_INET6  : return !std::memcmp(&sa6, &oth.sa6, sizeof(sa6));
         #ifndef _WIN32
-        case AF_UNIX   : return !std::strcmp(sau.sun_path, oth.sau.sun_path);
+        case AF_UNIX   : {
+            auto l1 = length();
+            auto l2 = oth.length();
+            if (l1 != l2) return false;
+            return !std::memcmp(&sau, &oth.sau, l1);
+        }
         #endif
         default        : throw _not_supported();
     }
@@ -90,11 +138,11 @@ uint16_t SockAddr::port () const {
 
 size_t SockAddr::length () const {
     switch (sa.sa_family) {
-        case AF_UNSPEC: return 0;
+        case AF_UNSPEC: return sizeof(sa_family_t);
         case AF_INET:   return sizeof(sa4);
         case AF_INET6:  return sizeof(sa6);
         #ifndef _WIN32
-        case AF_UNIX:   return sizeof(sau);
+        case AF_UNIX:   return sizeof(sa_family_t) + strlen(sau.sun_path) + 1; /* null-byte */
         #endif
         default: throw _not_supported();
     }
