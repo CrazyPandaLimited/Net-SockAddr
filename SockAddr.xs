@@ -59,18 +59,8 @@ bool SockAddr::is_unix ()
 #endif
 
 string_view SockAddr::get () {
-    size_t len;
-    switch (THIS->family()) {
-        case AF_UNSPEC : XSRETURN_UNDEF;
-        case AF_INET   :
-        case AF_INET6  : len = THIS->length(); break;
-#ifndef _WIN32
-        default        : len = THIS->length(); break; // AF_UNIX
-#else
-        default        : XSRETURN_UNDEF;
-#endif
-    }
-    RETVAL = string_view((const char*)THIS->get(), len);
+    if (THIS->family() == AF_UNSPEC) XSRETURN_UNDEF;
+    RETVAL = string_view((const char*)THIS->get(), THIS->length());
 }
 
 std::string SockAddr::_to_string (...) {
