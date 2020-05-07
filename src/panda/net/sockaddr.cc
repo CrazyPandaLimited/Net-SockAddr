@@ -81,20 +81,14 @@ SockAddr::SockAddr (const sockaddr* _sa, size_t length) {
     }
 }
 
-void SockAddr::assure_correct_unix(size_t length) noexcept {
-    switch (sa.sa_family) {
 #ifndef _WIN32
-    case AF_UNIX: {
-        // write null-byte by force
-        if (length == 2) { length = 3; }
-        ((char*)&sa)[length - 1] = 0;
-        break;
-    }
-#endif
-    case AF_INET:  if (length < sizeof(sockaddr_in))  memset(((char*)&sa4) + length, 0, sizeof(sockaddr_in)  - length); break;
-    case AF_INET6: if (length < sizeof(sockaddr_in6)) memset(((char*)&sa6) + length, 0, sizeof(sockaddr_in6) - length); break;
-    }
+void SockAddr::assure_correct_unix(size_t length) noexcept {
+    assert(sa.sa_family == AF_UNIX);
+    // write null-byte by force
+    if (length == 2) { length = 3; }
+    ((char*)&sa)[length - 1] = 0;
 }
+#endif
 
 SockAddr& SockAddr::operator=(const SockAddr& oth) {
     if (this != &oth) {

@@ -17,7 +17,7 @@ SockAddr* _in_sockaddr_ptr (SV* arg) {
 SockAddr _in_sockaddr (SV* arg) {
     if (!SvOK(arg)) return {};
     if (Sv(arg).is_object_ref()) return *_in_sockaddr_ptr(arg);
-    if (!SvPOK(arg) || SvCUR(arg) < sizeof(sa_family_t)) throw "invalid sockaddr";
+    if (!SvPOK(arg) || SvCUR(arg) < sizeof(panda::net::sa_family_t)) throw "invalid sockaddr";
 
     size_t sz =  (size_t)SvCUR(arg);
     auto sa = (const sockaddr*)SvPVX(arg);

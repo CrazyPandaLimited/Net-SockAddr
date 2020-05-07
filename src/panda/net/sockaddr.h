@@ -63,7 +63,7 @@ struct SockAddr {
             // length is the actual size
             validate(&sa, length);
             #ifndef _WIN32
-            assure_correct_unix(length);
+            if (sa.sa_family == AF_UNIX) assure_correct_unix(length);
             #endif
         }
     }
