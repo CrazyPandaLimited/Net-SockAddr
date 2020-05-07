@@ -45,29 +45,23 @@ const SockAddr::Inet6 SockAddr::Inet6::sa_loopback(SockAddr::Inet6::addr_loopbac
 
 static system_error _not_supported () { return system_error(make_error_code(errc::address_family_not_supported)); }
 
-bool SockAddr::is_valid(const sockaddr *sa, size_t length) noexcept {
+static inline bool is_valid (const sockaddr *sa, size_t length) noexcept {
     if (length < sizeof (sa_family_t)) return false;
-    #ifndef _WIN32
-    if (length > sizeof (sockaddr_un)) return false;
-    #else
-    if (length > sizeof (sockaddr_in6)) return false;
-    #endif
 
     switch (sa->sa_family) {
         #ifndef _WIN32
-        case AF_UNIX   :
+        case AF_UNIX   : return length <= sizeof(sockaddr_un);
         #endif
-        case AF_INET   : /* no reasonable assumption about valid bytes */
-        case AF_INET6  : /* no reasonable assumption about valid bytes */
+        case AF_INET   :
+        case AF_INET6  :
         case AF_UNSPEC : return true;
         default        : return false;
     }
 }
 
-void SockAddr::validate(const sockaddr* sa, size_t length) {
+void SockAddr::validate (const sockaddr* sa, size_t length) {
     if (!is_valid(sa, length)) throw system_error(make_error_code(errc::bad_address));
 }
-
 
 SockAddr::SockAddr (const sockaddr* _sa, size_t length) {
     validate(_sa, length);
@@ -82,21 +76,18 @@ SockAddr::SockAddr (const sockaddr* _sa, size_t length) {
 }
 
 #ifndef _WIN32
-void SockAddr::assure_correct_unix(size_t length) noexcept {
+void SockAddr::assure_correct_unix (size_t length) noexcept {
     assert(sa.sa_family == AF_UNIX);
     // write null-byte by force
     if (length == 2) { length = 3; }
-    ((char*)&sa)[length - 1] = 0;
+    sau.sun_path[length - 3] = 0;
 }
 #endif
 
-SockAddr& SockAddr::operator=(const SockAddr& oth) {
-    if (this != &oth) {
-        memcpy(&sa, &oth.sa, oth.length());
-    }
+SockAddr& SockAddr::operator= (const SockAddr& oth) {
+    if (this != &oth) memcpy(&sa, &oth.sa, oth.length());
     return *this;
 }
-
 
 bool SockAddr::operator== (const SockAddr& oth) const {
     if (family() != oth.family()) return false;

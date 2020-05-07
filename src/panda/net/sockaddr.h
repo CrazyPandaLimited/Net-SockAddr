@@ -22,8 +22,7 @@ struct SockAddr {
     struct Inet4;
     struct Inet6;
 
-    static bool is_valid(const sockaddr* sa, size_t length) noexcept;
-    static void validate(const sockaddr* sa, size_t length);
+    static void validate (const sockaddr* sa, size_t length);
 
     SockAddr () { sa.sa_family = AF_UNSPEC; }
 
@@ -55,9 +54,9 @@ struct SockAddr {
     uint16_t port   () const;
     size_t   length () const;
 
-    template<typename Function>
-    void assign_foreign(Function&& fn) {
-        size_t length = sizeof (sa6); // max size
+    template <typename Function>
+    void assign_foreign (Function&& fn) {
+        size_t length = sizeof(*this); // max size
         bool success = fn(&sa, &length);
         if (success) {
             // length is the actual size
