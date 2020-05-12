@@ -21,7 +21,7 @@ struct SockAddr {
 
     static const size_t IP4_MAX_ADDRSTRLEN = 16;
     static const size_t IP6_MAX_ADDRSTRLEN = 46;
-    static const size_t BASE_LEN = offsetof(sockaddr, sa_family) + sizeof(sa_family_t);
+    static const size_t BASE_LEN = offsetof(sockaddr, sa_data);
 
     SockAddr () { sa.sa_family = AF_UNSPEC; }
 
@@ -70,6 +70,7 @@ struct SockAddr {
     }
 
   #ifndef _WIN32
+    static const size_t PATH_OFFSET = offsetof(sockaddr_un, sun_path);
     struct Unix;
 
     SockAddr (const sockaddr_un* sa, size_t length) : SockAddr((const sockaddr*)sa, length) {}
