@@ -20,16 +20,11 @@ target_link_libraries(net-sockaddr panda::panda-lib)
 file(GLOB_RECURSE testSource RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "tests/*.cc")
 list(FILTER testSource EXCLUDE REGEX "tests/main.cc")
 
-add_library(lib-tests  STATIC ${testSource})
+add_library(lib-tests  STATIC EXCLUDE_FROM_ALL ${testSource})
 target_link_libraries(lib-tests PUBLIC net-sockaddr)
 
-find_package(Catch2 QUIET)
-if (Catch2_FOUND)
-    target_link_libraries(lib-tests PUBLIC Catch2::Catch2)
-
-    get_target_property(Catch2_INCLUDE_DIR Catch2::Catch2 INTERFACE_INCLUDE_DIRECTORIES)
-    target_include_directories(lib-tests PUBLIC ${Catch2_INCLUDE_DIR}/catch2) #tmp fix because we use Catch2 wrong, it should be include <catch/catch.hpp>, not <catch.hpp>
-endif()
+find_package(Catch2)
+target_link_libraries(lib-tests PUBLIC Catch2::Catch2)
 
 ########################ctests######################################
 #executable should be MyTest to pass test esception.cc that checks "library" name
