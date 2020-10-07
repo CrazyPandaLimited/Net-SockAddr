@@ -16,6 +16,10 @@ target_compile_features(net-sockaddr PUBLIC cxx_std_14)
 find_package(panda-lib REQUIRED)
 target_link_libraries(net-sockaddr panda::panda-lib)
 
+if (WIN32)
+    target_link_libraries(net-sockaddr ws2_32)
+endif()
+
 ########################tests#######################################
 file(GLOB_RECURSE testSource RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "tests/*.cc")
 list(FILTER testSource EXCLUDE REGEX "tests/main.cc")
