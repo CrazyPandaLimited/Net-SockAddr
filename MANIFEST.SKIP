@@ -1,0 +1,3 @@
+libnet-sockaddr/build/
+libnet-sockaddr/cmake_props/
+#!include_default
