@@ -1,7 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 PROJECT(Net-Sockadr VERSION 1.1.5 LANGUAGES CXX)
 enable_testing()
-set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(LIB_TYPE STATIC)
 
@@ -11,12 +10,19 @@ target_include_directories(net-sockaddr PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
     $<INSTALL_INTERFACE:include>
 )
-target_compile_features(net-sockaddr PUBLIC cxx_std_14)
+set_target_properties(net-sockaddr PROPERTIES
+    CXX_STANDARD 14
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+)
 
 find_package(panda-lib REQUIRED)
 target_link_libraries(net-sockaddr panda::panda-lib)
 
 add_library(panda::net-sockaddr ALIAS net-sockaddr)
+if (WIN32)
+    target_link_libraries(net-sockaddr PUBLIC ws2_32)
+endif()
 
 ########################tests#######################################
 file(GLOB_RECURSE testSource RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "tests/*.cc")
