@@ -107,14 +107,14 @@ Only for Unix systems
 
 =item INADDR_ANY
 
-Binary IPv4 address for listening all interfaces on machine.
+Binary IPv4 address for binding to all interfaces on machine.
 
     my $sa = Net::SockAddr::Inet4::from_addr(Net::SockAddr::INADDR_ANY, 80);
     $server->bind($sa);
 
 =item INADDR_LOOPBACK
 
-Binary IPv4 address for loopback interface
+Binary IPv4 address of the loopback interface
 
 =item INADDR_BROADCAST
 
@@ -126,7 +126,7 @@ Binary IPv4 invalid address (usually '255.255.255.255')
 
 =item SOCKADDR_ANY
 
-IPv4 sockaddr for listening all interfaces on machine.
+IPv4 sockaddr for binding to all interfaces with auto-selected port.
 
     $server->bind(Net::SockAddr::SOCKADDR_ANY); 
     
@@ -136,21 +136,21 @@ C<SOCKADDR_ANY> is the same as
 
 =item SOCKADDR_LOOPBACK
 
-IPv4 sockaddr for loopback interface. The same as
+IPv4 sockaddr for binding to loopback interface with auto-selected port. The same as
 
     Net::SockAddr::Inet4->new(Net::SockAddr::INADDR_LOOPBACK, 0);
 
 =item IN6ADDR_ANY
 
-Binary IPv6 address for listening all interfaces on machine.
+Binary IPv6 address for binding to all interfaces on machine.
 
 =item IN6ADDR_LOOPBACK
 
-Binary IPv6 address for loopback interface
+Binary IPv6 address of the loopback interface
 
 =item SOCKADDR6_ANY
 
-IPv6 sockaddr for listening all interfaces on machine.
+IPv6 sockaddr for binding to all interfaces with auto-selected port.
 
     $server->bind(Net::SockAddr::SOCKADDR6_ANY); 
     
@@ -160,7 +160,7 @@ C<SOCKADDR6_ANY> is the same as
 
 =item SOCKADDR6_LOOPBACK
 
-IPV6 sockaddr for loopback interface. The same as
+IPV6 sockaddr for binding to loopback interface with auto-selected port. The same as
 
     Net::SockAddr::Inet6->new(Net::SockAddr::IN6ADDR_LOOPBACK, 0);
 
