@@ -19,7 +19,6 @@ set_target_properties(net-sockaddr PROPERTIES
 find_package(panda-lib REQUIRED)
 target_link_libraries(net-sockaddr panda::panda-lib)
 
-add_library(panda::net-sockaddr ALIAS net-sockaddr)
 if (WIN32)
     target_link_libraries(net-sockaddr PUBLIC ws2_32)
 endif()
@@ -36,9 +35,9 @@ target_link_libraries(lib-tests PUBLIC Catch2::Catch2)
 
 ########################ctests######################################
 #executable should be MyTest to pass test esception.cc that checks "library" name
-add_executable(sockaddr-test ${testSource} "tests/main.cc")
-target_link_libraries(sockaddr-test lib-tests)
-add_test(test-all sockaddr-test)
+add_executable(MyTest ${testSource} "tests/main.cc")
+target_link_libraries(MyTest lib-tests)
+add_test(test-all MyTest)
 
 ########################install#####################################
 install(DIRECTORY src/ DESTINATION include
@@ -48,9 +47,7 @@ install(TARGETS net-sockaddr EXPORT net-sockaddrTargets
 )
 
 install(EXPORT net-sockaddrTargets
-    FILE net-sockaddrTargets.cmake
+    FILE net-sockaddrConfig.cmake
     NAMESPACE panda::
     DESTINATION lib/cmake/net-sockaddr
 )
-
-install(FILES net-sockaddrConfig.cmake DESTINATION lib/cmake/net-sockaddr)
