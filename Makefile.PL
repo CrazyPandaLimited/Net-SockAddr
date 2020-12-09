@@ -8,8 +8,8 @@ my $cmake_tests   = "tests";
 my %params = (
     NAME          => 'Net::SockAddr',
     CPLUS         => 11,
-    INC           => '-Ilibnet-sockaddr/src -Isrc',
-    SRC           => ['src'],
+    INC           => '-Isrc',
+    SRC           => 'src',
     BIN_DEPS      => ['XS::Framework', 'Export::XS'],
     BIN_SHARE     => {INCLUDE  => {'src' => '/'}},
     CCFLAGS       => '-Wall -Wextra',

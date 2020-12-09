@@ -15,6 +15,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_EXTENSIONS NO
 )
 
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
+
 find_package(panda-lib REQUIRED)
 target_link_libraries(${PROJECT_NAME} panda-lib)
 
