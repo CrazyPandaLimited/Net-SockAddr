@@ -2,6 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 PROJECT(panda-net-sockaddr VERSION 1.1.5 LANGUAGES CXX)
 
 set(LIB_TYPE STATIC)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 file(GLOB_RECURSE libSource RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "src/panda/*.cc")
 add_library(${PROJECT_NAME} ${LIB_TYPE} ${libSource})
@@ -9,12 +10,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
     $<INSTALL_INTERFACE:include>
 )
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    CXX_STANDARD 14
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS NO
-)
-
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 
 find_package(panda-lib REQUIRED)

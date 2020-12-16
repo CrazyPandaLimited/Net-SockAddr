@@ -1,3 +1,3 @@
 if (NOT TARGET panda-net-sockaddr)
-    include(panda-net-sockaddr-targets)
+    include(${CMAKE_CURRENT_LIST_DIR}/panda-net-sockaddr-targets.cmake)
 endif()
