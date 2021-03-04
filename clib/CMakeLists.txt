@@ -3,6 +3,12 @@ PROJECT(panda-net-sockaddr VERSION 1.1.5 LANGUAGES CXX)
 
 set(LIB_TYPE STATIC)
 set(CMAKE_CXX_EXTENSIONS OFF)
+option(NET_SOCKADDR_BUILD_TESTS OFF)
+if (${NET_SOCKADDR_BUILD_TESTS})
+    set(EXCLUDE_TEST)
+else()
+    set(EXCLUDE_TEST EXCLUDE_FROM_ALL)
+endif()
 
 file(GLOB_RECURSE libSource RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "src/panda/*.cc")
 add_library(${PROJECT_NAME} ${LIB_TYPE} ${libSource})
@@ -33,7 +39,7 @@ target_link_libraries(tests PUBLIC Catch2::Catch2)
 ########################ctests######################################
 #executable should be MyTest to pass test esception.cc that checks "library" name
 enable_testing()
-add_executable(runtests ${testSource} "tests/main.cc")
+add_executable(runtests ${EXCLUDE_TEST} ${testSource} "tests/main.cc")
 target_link_libraries(runtests tests)
 add_test(test-all runtests)
 
