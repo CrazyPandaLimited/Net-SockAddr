@@ -11,6 +11,7 @@ PROJECT(panda-net-sockaddr VERSION 1.1.5 LANGUAGES CXX)
 set(LIB_TYPE STATIC)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+option(NET_SOCKADDR_FETCH_DEPS OFF)
 option(NET_SOCKADDR_TESTS OFF)
 option(NET_SOCKADDR_TESTS_IN_ALL ${NOT_SUBPROJECT})
 
@@ -18,6 +19,10 @@ if (${NET_SOCKADDR_TESTS_IN_ALL})
     set(EXCLUDE_TEST)
 else()
     set(EXCLUDE_TEST EXCLUDE_FROM_ALL)
+endif()
+
+if (${NET_SOCKADDR_FETCH_DEPS})
+    include(FetchDeps.cmake)
 endif()
 
 file(GLOB_RECURSE libSource RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "src/panda/*.cc")
